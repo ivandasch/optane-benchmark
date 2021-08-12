@@ -9,12 +9,12 @@
 static const size_t ERR_MSG_SZ = 128;
 static const size_t ERRNO_MSG_SZ = 64;
 
-inline void throw_err(JNIEnv* env, const char* msg) {
+inline void throw_err(JNIEnv *env, const char *msg) {
     jclass xklass = env->FindClass("java/lang/RuntimeException");
     env->ThrowNew(xklass, msg);
 }
 
-inline void throw_err_fmt(JNIEnv* env, const char* fmt, ...) {
+inline void throw_err_fmt(JNIEnv *env, const char *fmt, ...) {
     char buf[ERR_MSG_SZ];
 
     va_list args;
@@ -25,7 +25,7 @@ inline void throw_err_fmt(JNIEnv* env, const char* fmt, ...) {
     throw_err(env, buf);
 }
 
-inline void throw_errno_fmt(JNIEnv* env, const char* fmt, ...) {
+inline void throw_errno_fmt(JNIEnv *env, const char *fmt, ...) {
     char buf[ERR_MSG_SZ];
 
     va_list args;

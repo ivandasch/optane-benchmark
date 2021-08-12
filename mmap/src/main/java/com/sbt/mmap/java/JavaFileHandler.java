@@ -100,7 +100,6 @@ public class JavaFileHandler implements FileHandler {
 
     @Override public void close() throws Exception {
         try {
-            fsync();
             if (cleanerMtd != null) {
                 cleanerMtd.invoke(buf);
             }

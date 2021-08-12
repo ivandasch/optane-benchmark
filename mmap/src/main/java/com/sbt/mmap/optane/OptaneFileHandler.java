@@ -26,7 +26,6 @@ public class OptaneFileHandler implements com.sbt.mmap.FileHandler {
 
     /** {@inheritDoc} */
     @Override public void close() throws Exception {
-        fsync();
         munmap(ctx.buffer);
     }
 

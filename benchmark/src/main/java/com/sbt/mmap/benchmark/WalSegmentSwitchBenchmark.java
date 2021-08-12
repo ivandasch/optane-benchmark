@@ -36,17 +36,12 @@ public class WalSegmentSwitchBenchmark {
         @Param({"1073741824"})
         public long fileSz;
 
-        @Param({"16777216", "33554432"})
-        public int bufSz;
-
         @Param({"/home/ivandasch/mem"})
         public String path;
 
         public Path filePath;
 
         public FileHandler handler;
-
-        public byte[] buf;
 
         @Setup(Level.Trial)
         public void setUpTrial() throws Exception {
@@ -62,8 +57,6 @@ public class WalSegmentSwitchBenchmark {
                     }
                 }
             }
-
-            buf = new byte[bufSz];
         }
 
         @TearDown(Level.Trial)
@@ -75,7 +68,18 @@ public class WalSegmentSwitchBenchmark {
         @Setup(Level.Invocation)
         public void setUp() throws Exception {
             handler = FileHandler.getHandler(filePath.toString(), fileSz, type);
-            ThreadLocalRandom.current().nextBytes(buf);
+
+            ByteBuffer bbuf = handler.getBuffer();
+            bbuf.position(0);
+
+            int remained = bbuf.capacity();
+
+            while(remained > 0) {
+                ThreadLocalRandom.current().nextBytes(FILL_BUF);
+                int sz = Math.min(remained, FILL_BUF.length);
+                bbuf.put(ByteBuffer.wrap(FILL_BUF, 0, sz));
+                remained -= sz;
+            }
         }
 
         @TearDown(Level.Invocation)
@@ -93,11 +97,6 @@ public class WalSegmentSwitchBenchmark {
     @Measurement(iterations = 5, time = 5, timeUnit = MILLISECONDS)
     public void switchSegment(BenchmarkState state) throws Exception {
         FileHandler handler = state.handler;
-        ByteBuffer buf = handler.getBuffer();
-        long offset = buf.capacity() - state.buf.length;
-        buf.position((int)offset);
-        buf.put(state.buf);
-        handler.fsync(offset, state.buf.length);
         handler.close();
         state.handler = FileHandler.getHandler(state.filePath.toString(), state.fileSz, state.type);
     }

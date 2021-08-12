@@ -94,7 +94,7 @@ public class WalSegmentSwitchBenchmark {
     @Warmup(iterations = 1, time = 5)
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
-    @Measurement(iterations = 5, time = 5, timeUnit = MILLISECONDS)
+    @Measurement(iterations = 5, time = 5)
     public void switchSegment(BenchmarkState state) throws Exception {
         FileHandler handler = state.handler;
         handler.close();
